@@ -168,9 +168,7 @@ public class HttpHelper {
         if (response != null) {
             if (!TextUtils.isEmpty(String.valueOf(response.get("body")))) {
                 String result = response.get("body").toString();
-                if(LogUtils.PRINT_LOG){
-                    systemLog((int)response.get("requestType"),url,(String)response.get("url"),result,requestjson);
-                }
+                systemLog((int)response.get("requestType"),url,(String)response.get("url"),result,requestjson);
 //                T t = mGson.fromJson(result, clazz);
                 if(TextUtils.equals(String.valueOf(response.get("code")),"200")){
                     try {
@@ -190,14 +188,10 @@ public class HttpHelper {
                 }else{
                     if(response.get("message") != null){
                         httpCallBack.onError(TextUtils.isEmpty(response.get("message").toString()) ? response.get("body").toString() : response.get("message").toString(),null);
-                        if(LogUtils.PRINT_LOG){
-                            systemLog((int)response.get("requestType"),url,(String)response.get("url"),(TextUtils.isEmpty(response.get("message").toString()) ? response.get("body").toString() : response.get("message").toString()),requestjson);
-                        }
+                        systemLog((int)response.get("requestType"),url,(String)response.get("url"),(TextUtils.isEmpty(response.get("message").toString()) ? response.get("body").toString() : response.get("message").toString()),requestjson);
                     }else{
                         httpCallBack.onError(response.get("code")+"",null);
-                        if(LogUtils.PRINT_LOG){
-                            systemLog((int)response.get("requestType"),url,(String)response.get("url"),response.get("code")+"     "+response.get("body").toString(),requestjson);
-                        }
+                        systemLog((int)response.get("requestType"),url,(String)response.get("url"),response.get("code")+"     "+response.get("body").toString(),requestjson);
                     }
 
                 }
