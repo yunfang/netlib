@@ -59,17 +59,17 @@ public class Request<R extends BaseResult> {
      *
      * @param requestCallback 执行完毕后的回调
      */
-    public void uploadexecute(RequestCallback<R> requestCallback,File file) {
-        uploadperformRequest(requestCallback,file);
+    public void uploadexecute(RequestCallback<R> requestCallback,File file,String fileParamName) {
+        uploadperformRequest(requestCallback,file,fileParamName);
     }
 
-    private void uploadperformRequest(RequestCallback<R> requestCallback,File file) {
+    private void uploadperformRequest(RequestCallback<R> requestCallback,File file,String upload_fileParamName) {
 
 //        String UrlParam = getUrl();
-         gethttp(requestCallback,Method.POST_UPLOAD,file);
+         gethttp(requestCallback,Method.POST_UPLOAD,file,upload_fileParamName);
 
     }
-    private void gethttp(final RequestCallback<R> mRequestCallback,int mMethod,File file) {
+    private void gethttp(final RequestCallback<R> mRequestCallback,int mMethod,File file,String... upload_fileParamName) {
         switch (mMethod){
             case Method.GET:
                 HttpHelper.doGetRequest(LocalApplication.getContext(), mUrl, mArguments, mResultClass, new HttpCallBack<R>() {
@@ -99,7 +99,7 @@ public class Request<R extends BaseResult> {
                 });
                 break;
             case Method.POST_UPLOAD:
-                HttpHelper.UploadRequest(LocalApplication.getContext(), mUrl,file, mArguments, mResultClass, new HttpCallBack<R>() {
+                HttpHelper.UploadRequest(LocalApplication.getContext(), mUrl,file, mArguments, mResultClass,upload_fileParamName, new HttpCallBack<R>() {
                     @Override
                     public void onSuccess(String json, R r) {
                         mRequestCallback.onRequestSuccess(r,json);
@@ -129,7 +129,6 @@ public class Request<R extends BaseResult> {
 
 
     /**
-     * 增加请求参数, 会以URL?key1=value1&key2=value2的形式组合到URL中
      *
      * @param key      请求参数key
      * @param argument 请求参数value

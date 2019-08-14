@@ -5,13 +5,11 @@ import android.content.Context;
 
 import java.util.Stack;
 
-//import com.umeng.analytics.MobclickAgent;
 
 /**
  * 应用程序Activity管理类：用于Activity管理和应用程序退出
  *
  * @version 1.1
- * @created 2017-03-03
  */
 public class ActivityManager {
 

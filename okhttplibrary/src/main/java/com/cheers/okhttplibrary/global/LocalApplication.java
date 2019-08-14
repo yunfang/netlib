@@ -4,13 +4,16 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
 
+import com.cheers.okhttplibrary.utils.OkHttpUtils;
+import com.cheers.okhttplibrary.utils.cache.CacheUtilsObject;
+import com.cheers.okhttplibrary.utils.cache.Config;
 import com.orhanobut.logger.Logger;
 
 import java.io.File;
 
 
 /**
- * Created by pc on 2017/5/31.
+ * Created by zhouyunfang on 2017/5/31.
  */
 
 public class LocalApplication extends Application {
@@ -23,6 +26,17 @@ public class LocalApplication extends Application {
 //        initAppCrashHelper();
 
         initLogger();
+
+        DOWNLOAD_FILE_DIRECTORY = Environment
+                .getExternalStorageDirectory()
+                + File.separator
+                + getContext().getPackageName()
+                + File.separator + "download" + File.separator;
+        System.out.println("DOWNLOAD_FILE_DIRECTORY----->"+DOWNLOAD_FILE_DIRECTORY);
+
+        Config.init(this);
+        CacheUtilsObject.init(this);
+        OkHttpUtils.initOkGo(this);//下载初始化
     }
 
     private void initAppCrashHelper() {
@@ -37,12 +51,7 @@ public class LocalApplication extends Application {
     }
 
 
-    public static final String DOWNLOAD_FILE_DIRECTORY = Environment
-            .getExternalStorageDirectory()
-            + File.separator
-            + "com.ssxg.cheers"
-            + File.separator + "download" + File.separator;
-
+    public static String DOWNLOAD_FILE_DIRECTORY = "" ;
 
     public static synchronized Context getContext() {
         return LocalApplication.mContext;

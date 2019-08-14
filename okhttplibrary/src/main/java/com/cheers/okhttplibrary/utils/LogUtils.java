@@ -3,7 +3,6 @@ package com.cheers.okhttplibrary.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.cheers.okhttplibrary.global.HttpConstants;
 import com.orhanobut.logger.Logger;
 
 import org.json.JSONException;
@@ -16,7 +15,8 @@ import org.json.JSONObject;
  * Version: V1.0
  */
 public class LogUtils {
-    private static final int mLogLevel = HttpConstants.PRINT_LOG ? 5 : -1;
+    public static boolean PRINT_LOG = true;
+    private static final int mLogLevel = PRINT_LOG ? 5 : -1;
 
     public static void logE(String message) {
         if (mLogLevel > 4) {

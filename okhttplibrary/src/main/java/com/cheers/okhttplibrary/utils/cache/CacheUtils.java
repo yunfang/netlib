@@ -10,7 +10,7 @@ import com.cheers.okhttplibrary.global.LocalApplication;
  * 缓存存储类
  */
 public class CacheUtils {
-    public static final String PREF_NAME = "ssxg_cheers_pfs";
+    public static final String PREF_NAME = LocalApplication.getContext().getPackageName()+"_pfs";
     public static final String KEY_IS_LOGOUT = "is_logout";
 
     

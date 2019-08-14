@@ -273,7 +273,6 @@ public class FileUtils {
     /**
      *
      * 将字符串数据保存到文件.
-     * <br/>注意：如果没有目录则会创建目录
      *
      * @param content 字符串内容
      * @param path    文件路径
@@ -495,7 +494,6 @@ public class FileUtils {
 
     /**
      * 合法化文件名
-     * 替换文件名不允许出现的字符，比如{}/\:*?"<>以及无效或者不可视Unicode字符
      *
      * @param fileName 被合法化的文件名
      * @return 合法化后的文件名

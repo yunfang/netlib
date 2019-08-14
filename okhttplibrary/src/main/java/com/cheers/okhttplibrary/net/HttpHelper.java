@@ -5,10 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.cheers.okhttplibrary.bean.BaseResult;
-import com.cheers.okhttplibrary.bean.LogoutResult;
 import com.cheers.okhttplibrary.utils.LogUtils;
-import com.cheers.okhttplibrary.utils.RxBus;
-import com.cheers.okhttplibrary.utils.cache.CacheUtilsObject;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -30,7 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
@@ -113,7 +109,7 @@ public class HttpHelper {
     }
 
     public static <T extends BaseResult> void UploadRequest(Context context, final String url, final File file, final Map<String,
-            Object> map, final Class<T> clazz, final HttpCallBack<T> httpCallBack) {
+            Object> map, final Class<T> clazz, final String[] upload_fileParamName, final HttpCallBack<T> httpCallBack) {
 //        if (!NetUtils.hasNetwork(context)) {
 //            ToastUtils.showToast("网络连接不可用");
 //            return;
@@ -123,7 +119,7 @@ public class HttpHelper {
                 .map(new Func1<String, Map>() {
                     @Override
                     public Map call(String url) {
-                        return getUploadReponse(url, json,map,file);
+                        return getUploadReponse(url, json,map,file,upload_fileParamName);
                     }
                 }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -172,14 +168,13 @@ public class HttpHelper {
         if (response != null) {
             if (!TextUtils.isEmpty(String.valueOf(response.get("body")))) {
                 String result = response.get("body").toString();
-                systemLog((int)response.get("requestType"),url,(String)response.get("url"),result,requestjson);
+                if(LogUtils.PRINT_LOG){
+                    systemLog((int)response.get("requestType"),url,(String)response.get("url"),result,requestjson);
+                }
 //                T t = mGson.fromJson(result, clazz);
                 if(TextUtils.equals(String.valueOf(response.get("code")),"200")){
                     try {
                         T t = mGson.fromJson(result, clazz);
-                        if(!TextUtils.isEmpty(t.getTokenFail())){//token失效，清除本地用户登录状态
-                            RxBus.getDefault().post(new LogoutResult());
-                        }
                         httpCallBack.onSuccess(result, mGson.fromJson(result, clazz));
                     }catch (Exception e){
                         e.printStackTrace();
@@ -195,10 +190,14 @@ public class HttpHelper {
                 }else{
                     if(response.get("message") != null){
                         httpCallBack.onError(TextUtils.isEmpty(response.get("message").toString()) ? response.get("body").toString() : response.get("message").toString(),null);
-                        systemLog((int)response.get("requestType"),url,(String)response.get("url"),(TextUtils.isEmpty(response.get("message").toString()) ? response.get("body").toString() : response.get("message").toString()),requestjson);
+                        if(LogUtils.PRINT_LOG){
+                            systemLog((int)response.get("requestType"),url,(String)response.get("url"),(TextUtils.isEmpty(response.get("message").toString()) ? response.get("body").toString() : response.get("message").toString()),requestjson);
+                        }
                     }else{
                         httpCallBack.onError(response.get("code")+"",null);
-                        systemLog((int)response.get("requestType"),url,(String)response.get("url"),response.get("code")+"     "+response.get("body").toString(),requestjson);
+                        if(LogUtils.PRINT_LOG){
+                            systemLog((int)response.get("requestType"),url,(String)response.get("url"),response.get("code")+"     "+response.get("body").toString(),requestjson);
+                        }
                     }
 
                 }
@@ -267,14 +266,18 @@ public class HttpHelper {
     }
 
     //请求网络
-    private static Map getUploadReponse(String url, String json, Map<String,Object> paramsMap,File file) {
+    private static Map getUploadReponse(String url, String json, Map<String, Object> paramsMap, File file, String[] upload_fileParamName) {
         StringBuilder tempParams = null;
         RequestBody body;
         Map<String, Object> responsemap = new HashMap<String, Object>();
         RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), file);
         MultipartBody.Builder requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM);
-        requestBody.addFormDataPart("headImage", System.currentTimeMillis()+".png", fileBody);
+        if(upload_fileParamName != null && upload_fileParamName.length > 0){
+            requestBody.addFormDataPart(upload_fileParamName[0], System.currentTimeMillis()+".png", fileBody);
+        }else{
+            requestBody.addFormDataPart("headImage", System.currentTimeMillis()+".png", fileBody);
+        }
         for (Map.Entry entry : paramsMap.entrySet()) {
             requestBody.addFormDataPart(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
         }
